@@ -1,0 +1,8 @@
+{
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ],
+    "appService.defaultWebAppToDeploy": "/subscriptions/a5f00820-6d77-4fd8-aef9-627fbdf0ce4a/resourceGroups/portfolio-website-rg/providers/Microsoft.Web/sites/jmpersonalportfolio",
+    "appService.deploySubpath": "."
+}
