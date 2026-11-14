@@ -5,7 +5,7 @@
 export const site = {
   title: "June Mphahlele | Strategic ICT Leader",
   description:
-    "I am a seasoned ICT leader with more than 20 years of experience across South Africa’s public sector, state-owned entities and higher education. I currently serve as Senior Manager and Acting Head of Department at a national ICT state entity. I work closely with senior leaders and clients to shape and advance technology strategy, ensuring ICT services are aligned with organisational mandates and strategic priorities. My focus includes strengthening ICT capabilities, building high-performing teams and enabling technology-driven outcomes that deliver meaningful value. I bring extensive experience in managing risk, security and compliance across complex public- and private-sector environments. As the digital landscape continues to evolve, I am particularly interested in the role of artificial intelligence and digital transformation in reshaping organisations and the way services are delivered. I see AI as an important part of the future of ICT leadership, with a particular interest in understanding how South Africa can harness its potential to improve service delivery, strengthen institutional capabilities and create sustainable value.",
+    "Strategic ICT leader and senior manager with 20+ years across South Africa's public sector, state-owned entities and higher education, advising leaders on technology strategy and AI-enabled digital transformation.",
   // Testimonials are hidden until real ones are added below. Set to true to show them.
   showTestimonials: false,
 };
@@ -35,7 +35,7 @@ export const about = {
     "I am a seasoned ICT leader with more than 20 years of experience across South Africa’s public sector, state-owned entities and higher education. I currently serve as Senior Manager and Acting Head of Department at a national ICT state entity.",
     "I work closely with senior leaders and clients to shape and advance technology strategy, ensuring ICT services are aligned with organisational mandates and strategic priorities.",
     "My focus includes strengthening ICT capabilities, building high-performing teams and enabling technology-driven outcomes that deliver meaningful value. I bring extensive experience in managing risk, security and compliance across complex public- and private-sector environments.",
-    "As the digital landscape continues to evolve, I am particularly interested in the role of artificial intelligence and digital transformation in reshaping organisations and the way services are delivered. I see AI as an important part of the future of ICT leadership, with a particular interest in understanding how South Africa can harness its potential to improve service delivery, strengthen institutional capabilities and create sustainable value." 
+    "As the digital landscape continues to evolve, I am particularly interested in the role of artificial intelligence and digital transformation in reshaping organisations and the way services are delivered. I see AI as an important part of the future of ICT leadership, with a particular interest in understanding how South Africa can harness its potential to improve service delivery, strengthen institutional capabilities and create sustainable value.",
   ],
 };
 
@@ -62,25 +62,23 @@ export const projects: {
   link?: string;
   repo?: string;
   badge?: string; // e.g. "Upcoming" or "Coming soon"
+  icon?: string; // icon options: "website" | "chatbot" (see components/SkillIcon.tsx)
 }[] = [
   {
     title: "About This Website",
+    icon: "website",
     description:
       "A responsive portfolio with an AI chatbot that answers visitor questions, and a contact form with a bot check that sends messages to my inbox. Partly built using AI prompting.",
     tags: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Claude AI", "Nodemailer", "Microsoft Azure"],
   },
   {
     title: "AI Interview Chatbot",
-    description: "An interactive AI-powered experience that allows you to engage with me through questions about my professional experience. Coming soon – interview me directly on this platform.",
+    icon: "chatbot",
+    description:
+      "An interactive AI-powered experience that allows you to engage with me through questions about my professional experience. Coming soon – interview me directly on this platform.",
     tags: ["AI", "Chatbot"],
     badge: "Upcoming",
   },
-  //{
-  //  title: "IoT for Livestock",
-  //  description: "An upcoming project using Internet of Things technology to monitor and manage livestock.",
-  //  tags: ["IoT", "Agriculture"],
-  //  badge: "Coming soon",
-  //},
 ];
 
 export const contact = {

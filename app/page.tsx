@@ -27,7 +27,7 @@ export default function Home() {
               <p className="mt-2 text-stone-500">{profile.credential}</p>
               <p className="mx-auto mt-6 max-w-lg text-lg leading-relaxed text-stone-600 md:mx-0">{profile.tagline}</p>
               <div className="mt-8 flex flex-wrap justify-center gap-3 md:justify-start">
-                <a href="#projects" className="rounded-full bg-indigo-600 px-6 py-3 font-medium text-white shadow-lg shadow-indigo-600/20 hover:bg-indigo-700">View my work</a>
+                <a href="#projects" className="rounded-full bg-indigo-600 px-6 py-3 font-medium text-white shadow-lg shadow-indigo-600/20 hover:bg-indigo-700">Interesting Projects</a>
                 <a href={profile.linkedin} target="_blank" rel="noreferrer" className="rounded-full border border-stone-300 px-6 py-3 font-medium text-stone-800 hover:border-indigo-600 hover:text-indigo-600">LinkedIn ↗</a>
               </div>
             </div>
@@ -87,8 +87,13 @@ export default function Home() {
             {projects.map((p) => (
               <article key={p.title} className="group flex flex-col rounded-2xl border border-stone-200 bg-stone-50 p-6 transition hover:-translate-y-1 hover:shadow-xl">
                 <div className="relative mb-5 flex aspect-video items-center justify-center rounded-xl bg-gradient-to-br from-indigo-100 to-pink-100">
+                  {p.icon && (
+                    <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-white/80 text-indigo-600 shadow-sm ring-1 ring-indigo-100 transition group-hover:scale-105">
+                      <SkillIcon name={p.icon} className="h-10 w-10" />
+                    </div>
+                  )}
                   {p.badge && (
-                    <span className="rounded-full bg-white/90 px-4 py-1.5 text-sm font-semibold text-indigo-700 shadow-sm ring-1 ring-indigo-200">{p.badge}</span>
+                    <span className="absolute right-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-indigo-700 shadow-sm ring-1 ring-indigo-200">{p.badge}</span>
                   )}
                 </div>
                 <h3 className="text-xl font-semibold text-stone-900">{p.title}</h3>

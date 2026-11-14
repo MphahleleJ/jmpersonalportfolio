@@ -1,4 +1,4 @@
-// Simple outline icons for the "How I lead" cards. Add more by adding a new key below.
+// Simple outline icons for the "How I lead" and Projects cards. Add more by adding a new key below.
 const paths: Record<string, React.ReactNode> = {
   // compass: strategy & advisory
   strategy: (
@@ -33,6 +33,26 @@ const paths: Record<string, React.ReactNode> = {
     </>
   ),
 };
+
+// Project icons
+paths.website = (
+  <>
+    <rect x="2.5" y="4" width="19" height="16" rx="2.5" />
+    <path d="M2.5 8.5h19" />
+    <circle cx="5.5" cy="6.25" r=".4" fill="currentColor" />
+    <circle cx="7.5" cy="6.25" r=".4" fill="currentColor" />
+    <circle cx="9.5" cy="6.25" r=".4" fill="currentColor" />
+    <path d="m9.5 12-2.5 2.5 2.5 2.5" />
+    <path d="m14.5 12 2.5 2.5-2.5 2.5" />
+  </>
+);
+// chat bubble with AI sparkle
+paths.chatbot = (
+  <>
+    <path d="M20 12.5a7.5 7.5 0 0 1-10.9 6.7L4 20.5l1.4-4.4A7.5 7.5 0 1 1 20 12.5z" />
+    <path d="M12.5 8.5 13.3 10.7 15.5 11.5 13.3 12.3 12.5 14.5 11.7 12.3 9.5 11.5 11.7 10.7z" />
+  </>
+);
 
 export default function SkillIcon({ name, className }: { name: string; className?: string }) {
   return (
