@@ -1,79 +1,55 @@
+# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
+# More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: Build and deploy Next.js to Azure Web App - jmpersonalportfolio
+name: Build and deploy Node.js app to Azure Web App - jmpersonalportfolio
 
 on:
   push:
     branches:
-      - main
+      - 'main'
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     permissions:
-      contents: read
+      contents: read #This is required for actions/checkout
 
     steps:
-      - name: Checkout source code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Set up Node.js version
         uses: actions/setup-node@v4
         with:
           node-version: '24.x'
-          cache: npm
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build Next.js application
-        run: npm run build
-
-      - name: Verify standalone deployment
+      - name: npm install, build, and test
         run: |
-          echo "Checking standalone deployment..."
+          npm ci
+          npm run build --if-present
+          npm run test --if-present
+          mkdir -p .next/standalone/public
+          echo "${{ github.sha }}" > .next/standalone/public/version.txt
 
-          test -f .next/standalone/server.js
-
-          test -d .next/standalone/.next/static
-
-          echo "Standalone server found"
-          echo "Static assets found"
-
-          ls -la .next/standalone
-
-      - name: Upload standalone artifact
+      - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: nextjs-standalone
-          path: .next/standalone/
+          name: node-app
+          path: .next/standalone
           include-hidden-files: true
-          retention-days: 1
 
   deploy:
     runs-on: ubuntu-latest
     needs: build
-
     permissions:
-      id-token: write
-      contents: read
+      id-token: write #This is required for requesting the JWT
+      contents: read #This is required for actions/checkout
 
     steps:
-      - name: Download standalone artifact
+      - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: nextjs-standalone
-          path: ./deploy
-
-      - name: Verify deployment package
-        run: |
-          echo "Deployment package contents:"
-          ls -la ./deploy
-
-          test -f ./deploy/server.js
-
-          echo "Deployment package is ready"
+          name: node-app
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -82,9 +58,10 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7C2A1261713B47A096E2E8C49A87FCC3 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D13E4ACD5BCB419AAAFEDC3826E6CF90 }}
 
-      - name: Deploy to Azure Web App
+      - name: 'Deploy to Azure Web App'
+        id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: jmpersonalportfolio
-          slot-name: Production
-          package: ./deploy
+          app-name: 'jmpersonalportfolio'
+          slot-name: 'Production'
+          package: .
