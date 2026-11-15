@@ -15,33 +15,39 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24.x'
-          cache: 'npm'
+          cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build Next.js application
+      - name: Build application
         run: npm run build
 
-      - name: Verify standalone output
+      - name: Verify deployment package
         run: |
+          echo "Checking standalone server..."
           test -f .next/standalone/server.js
+
+          echo "Checking static assets..."
           test -d .next/standalone/.next/static
-          echo "Standalone build verified"
+
+          echo "Checking package..."
           ls -lah .next/standalone
 
-      - name: Upload standalone artifact
+      - name: Upload deployment artifact
         uses: actions/upload-artifact@v4
         with:
           name: node-app
           path: .next/standalone/
           include-hidden-files: true
+          retention-days: 1
 
   deploy:
     runs-on: ubuntu-latest
@@ -52,7 +58,7 @@ jobs:
       contents: read
 
     steps:
-      - name: Download artifact
+      - name: Download deployment artifact
         uses: actions/download-artifact@v4
         with:
           name: node-app
