@@ -1,9 +1,11 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { azureAgentConfigured, askAzureAgent } from "@/lib/azureAgent";
 import { site, profile, about, leadership, projectsIntro, projects, testimonials, chatbotNotes, chatbotOfflineMessage } from "@/data/profile";
 
-// Chatbot endpoint used by components/ChatWidget.tsx.
-// Set ANTHROPIC_API_KEY (and optionally CHAT_MODEL) in your environment to enable real AI replies.
-// To use a different provider, replace the body of `generateReply` below.
+// Chatbot endpoint used by components/ChatWidget.tsx. Which assistant answers:
+//   1. Your Azure AI Foundry agent, when AZURE_AI_PROJECT_ENDPOINT and AZURE_AI_AGENT_NAME are set (see lib/azureAgent.ts)
+//   2. Otherwise Claude, when ANTHROPIC_API_KEY is set
+//   3. Otherwise the "currently undergoing training" message from data/profile.ts
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -47,6 +49,21 @@ export async function POST(req: Request) {
       .map((m) => ({ role: m.role, content: m.content.slice(0, 1000) }));
     while (messages.length && messages[0].role !== "user") messages.shift();
     if (!messages.length) return Response.json({ error: "No message provided." }, { status: 400 });
+
+    if (azureAgentConfigured()) {
+      const last = messages[messages.length - 1];
+      if (last.role !== "user") return Response.json({ error: "No message provided." }, { status: 400 });
+      const conversationId =
+        typeof body?.conversationId === "string" && /^[\w-]{1,200}$/.test(body.conversationId) ? body.conversationId : undefined;
+      try {
+        const result = await askAzureAgent(last.content, conversationId);
+        return Response.json({ reply: result.reply || chatbotOfflineMessage, conversationId: result.conversationId });
+      } catch (err) {
+        // Most often a sign-in or permission problem: see lib/azureAgent.ts. Visitors get the friendly message instead.
+        console.error("Azure agent error:", err instanceof Error ? err.message : err);
+        return Response.json({ reply: chatbotOfflineMessage });
+      }
+    }
 
     const reply = await generateReply(messages);
     return Response.json({ reply });

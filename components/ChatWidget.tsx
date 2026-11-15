@@ -13,6 +13,8 @@ export default function ChatWidget() {
     { role: "assistant", content: `Hi! I'm ${profile.name.split(" ")[0]}'s assistant. Ask me about their experience, leadership, projects or how to get in touch.` },
   ]);
   const endRef = useRef<HTMLDivElement>(null);
+  // Lets the Azure agent remember earlier questions in this chat
+  const conversationId = useRef<string | undefined>(undefined);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -31,9 +33,10 @@ export default function ChatWidget() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         // Skip the canned greeting; the API expects the conversation to start with the visitor.
-        body: JSON.stringify({ messages: next.slice(1) }),
+        body: JSON.stringify({ messages: next.slice(1), conversationId: conversationId.current }),
       });
       const data = await res.json();
+      if (data.conversationId) conversationId.current = data.conversationId;
       setMessages([...next, { role: "assistant", content: data.reply ?? data.error ?? "Sorry, something went wrong." }]);
     } catch {
       setMessages([...next, { role: "assistant", content: "Sorry, I couldn't reach the server. Please try again." }]);
