@@ -75,9 +75,9 @@ export const projects: {
     title: "AI Interview Chatbot",
     icon: "chatbot",
     description:
-      "An interactive AI-powered experience that allows you to engage with me through questions about my professional experience. Coming soon – interview me directly on this platform.",
-    tags: ["AI", "Chatbot"],
-    badge: "Upcoming",
+      "An interactive AI-powered experience that lets you interview me about my professional experience. I designed it in three parts: an AI agent in Azure AI Foundry set up to answer questions about my résumé, a secure server-side API in the website that passes each question to the agent and keeps the conversation going so follow-up questions make sense, and the chat window you see on this page. It runs on Azure App Service and signs in to the agent with a managed identity, so no passwords or keys are stored in the code.",
+    tags: ["Azure AI Foundry", "AI Agents", "Azure App Service", "Managed Identity", "Bicep", "Next.js", "TypeScript", "Azure SDK for JavaScript"],
+    badge: "Chatbot",
   },
 ];
 

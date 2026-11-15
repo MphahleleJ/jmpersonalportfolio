@@ -10,7 +10,7 @@ export default function ChatWidget() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([
-    { role: "assistant", content: `Hi! I'm ${profile.name.split(" ")[0]}'s assistant. Ask me about their experience, leadership, projects or how to get in touch.` },
+    { role: "assistant", content: "Hi! I'm happy to get started. Feel free to ask me anything about my professional background, work experience, skills, and career journey. I'm ready for your questions!" },
   ]);
   const endRef = useRef<HTMLDivElement>(null);
   // Lets the Azure agent remember earlier questions in this chat
