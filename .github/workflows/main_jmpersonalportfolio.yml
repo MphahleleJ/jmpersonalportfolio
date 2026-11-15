@@ -15,32 +15,50 @@ jobs:
       contents: read
 
     steps:
+      # 1. Checkout source code
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 2. Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24.x'
           cache: npm
 
+      # 3. Install dependencies
       - name: Install dependencies
         run: npm ci
 
+      # 4. Build Next.js application
       - name: Build application
         run: npm run build
 
-      - name: Verify deployment package
+      # 5. Verify standalone deployment files
+      - name: Verify standalone build
         run: |
           echo "Checking standalone server..."
+
           test -f .next/standalone/server.js
 
-          echo "Checking static assets..."
+          echo "Checking Next.js static assets..."
+
           test -d .next/standalone/.next/static
 
-          echo "Checking package..."
+          echo "Checking package.json..."
+
+          test -f .next/standalone/package.json
+
+          echo "Checking node_modules..."
+
+          test -d .next/standalone/node_modules
+
+          echo "Standalone build verified successfully"
+
+          echo "Deployment files:"
           ls -lah .next/standalone
 
+      # 6. Upload standalone application
       - name: Upload deployment artifact
         uses: actions/upload-artifact@v4
         with:
@@ -58,12 +76,32 @@ jobs:
       contents: read
 
     steps:
+      # 7. Download standalone application
       - name: Download deployment artifact
         uses: actions/download-artifact@v4
         with:
           name: node-app
-          path: .
+          path: ./deployment
 
+      # 8. Verify downloaded files
+      - name: Verify deployment package
+        run: |
+          echo "Checking downloaded deployment package..."
+
+          test -f ./deployment/server.js
+
+          test -f ./deployment/package.json
+
+          test -d ./deployment/.next/static
+
+          test -d ./deployment/node_modules
+
+          echo "Deployment package is ready"
+
+          echo "Files to deploy:"
+          ls -lah ./deployment
+
+      # 9. Login to Azure
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -71,9 +109,19 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7C2A1261713B47A096E2E8C49A87FCC3 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D13E4ACD5BCB419AAAFEDC3826E6CF90 }}
 
+      # 10. Deploy to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: jmpersonalportfolio
           slot-name: Production
-          package: .
+          package: ./deployment
+
+      # 11. Deployment confirmation
+      - name: Deployment completed
+        run: |
+          echo "=================================="
+          echo "Azure deployment completed"
+          echo "Application: jmpersonalportfolio"
+          echo "Slot: Production"
+          echo "=================================="
