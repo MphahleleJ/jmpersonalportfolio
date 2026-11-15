@@ -15,50 +15,46 @@ jobs:
       contents: read
 
     steps:
-      # 1. Checkout source code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Set up Node.js
+      - name: Show source commit
+        run: |
+          echo "Building commit: $GITHUB_SHA"
+          git log -1 --oneline
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24.x'
           cache: npm
 
-      # 3. Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # 4. Build Next.js application
-      - name: Build application
+      - name: Build Next.js application
         run: npm run build
 
-      # 5. Verify standalone deployment files
-      - name: Verify standalone build
+      - name: Add deployment fingerprint
         run: |
-          echo "Checking standalone server..."
+          echo "$GITHUB_SHA" > .next/standalone/BUILD_COMMIT
 
+          echo "Build fingerprint:"
+          cat .next/standalone/BUILD_COMMIT
+
+      - name: Verify standalone package
+        run: |
           test -f .next/standalone/server.js
-
-          echo "Checking Next.js static assets..."
-
-          test -d .next/standalone/.next/static
-
-          echo "Checking package.json..."
-
           test -f .next/standalone/package.json
-
-          echo "Checking node_modules..."
-
+          test -d .next/standalone/.next/static
           test -d .next/standalone/node_modules
 
-          echo "Standalone build verified successfully"
+          echo "Build ID:"
+          cat .next/BUILD_ID
 
-          echo "Deployment files:"
+          echo "Standalone files:"
           ls -lah .next/standalone
 
-      # 6. Upload standalone application
       - name: Upload deployment artifact
         uses: actions/upload-artifact@v4
         with:
@@ -76,32 +72,24 @@ jobs:
       contents: read
 
     steps:
-      # 7. Download standalone application
       - name: Download deployment artifact
         uses: actions/download-artifact@v4
         with:
           name: node-app
           path: ./deployment
 
-      # 8. Verify downloaded files
-      - name: Verify deployment package
+      - name: Verify deployment artifact
         run: |
-          echo "Checking downloaded deployment package..."
+          echo "Deployment commit:"
+          cat ./deployment/BUILD_COMMIT
 
           test -f ./deployment/server.js
-
           test -f ./deployment/package.json
-
           test -d ./deployment/.next/static
-
           test -d ./deployment/node_modules
 
-          echo "Deployment package is ready"
+          echo "Artifact verification successful"
 
-          echo "Files to deploy:"
-          ls -lah ./deployment
-
-      # 9. Login to Azure
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -109,19 +97,17 @@ jobs:
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_7C2A1261713B47A096E2E8C49A87FCC3 }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_D13E4ACD5BCB419AAAFEDC3826E6CF90 }}
 
-      # 10. Deploy to Azure Web App
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
           app-name: jmpersonalportfolio
           slot-name: Production
           package: ./deployment
+          clean: true
+          restart: true
 
-      # 11. Deployment confirmation
       - name: Deployment completed
         run: |
-          echo "=================================="
-          echo "Azure deployment completed"
+          echo "Deployment completed successfully"
           echo "Application: jmpersonalportfolio"
-          echo "Slot: Production"
-          echo "=================================="
+          echo "Commit: $GITHUB_SHA"
